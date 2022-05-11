@@ -16,18 +16,16 @@ using namespace std;
 
 void inicio()
 {
-    clear();
-    cout << "\n\n\n\n******************"
-            "************************";
-    cout << "\n\n\n\t****MY SHELL****";
+    system("clear");
+    cout << "\n\n******************************************";
+    cout << "\n\n\t****MY SHELL****";
     cout << "\n\n\t-USE AT YOUR OWN RISK-";
-    cout << "\n\n\n\n*******************"
-            "***********************";
+    cout << "\n\n******************************************";
     char *username = getenv("USER");
     cout << "\n\n\nUSER is: @%s" << username;
     cout << "\n";
-    sleep(1);
-    clear();
+    sleep(3);
+    //clear();
 }
 
 int takeInput(char *str)
@@ -309,8 +307,7 @@ int main()
         if (takeInput(inputString))
             continue;
         // process
-        execFlag = processString(inputString,
-                                 parsedArgs, parsedArgsPiped);
+        execFlag = processString(inputString, parsedArgs, parsedArgsPiped);
         // execflag returns zero if there is no command
         // or it is a builtin command,
         // 1 if it is a simple command
