@@ -165,54 +165,164 @@ void openHelp()
 
 int ownCmdHandler(char **parsed) //
 {
-    // int NoOfOwnCmds = 4, i, switchOwnArg = 0;
-    // char *ListOfOwnCmds;
-    // ListOfOwnCmds = new char[NoOfOwnCmds];
-    // char *username;
-    // ListOfOwnCmds[0] = "exit";
-    // ListOfOwnCmds[1] = "cd";
-    // ListOfOwnCmds[2] = "help";
-    // ListOfOwnCmds[3] = "hello";
+    int NoOfOwnCmds = 4, i, switchOwnArg = 0;
+    char *ListOfOwnCmds[NoOfOwnCmds];
+    char *username;
+
+    string mystring = "exit";
+    std::vector<char> v(mystring.length() + 1);
+    std::strcpy(&v[0], mystring.c_str());
+    char* str1=  &v[0];
+    
+
+    string mystring2 = "cd";
+    std::vector<char> v2(mystring2.length() + 1);
+    std::strcpy(&v2[0], mystring2.c_str());
+    char* str2=  &v2[0];
+
+    string mystring3 = "help";
+    std::vector<char> v3(mystring3.length() + 1);
+    std::strcpy(&v3[0], mystring3.c_str());
+    char* str3 =  &v3[0];
+
+    string mystring4 = "hello";
+    std::vector<char> v4(mystring4.length() + 1);
+    std::strcpy(&v4[0], mystring4.c_str());
+    char* str4 =  &v4[0];
+
+    ListOfOwnCmds[0] = str1;
+    ListOfOwnCmds[1] = str2;
+    ListOfOwnCmds[2] = str3;
+    ListOfOwnCmds[3] = str4;
 
 
-    // for (i = 0; i < NoOfOwnCmds; i++)
-    // {
-    //     if (strcmp(parsed[0], ListOfOwnCmds[i]) == 0)
-    //     {
-    //         switchOwnArg = i + 1;
-    //         break;
-    //     }
-    // }
+    for (i = 0; i < NoOfOwnCmds; i++)
+    {
+        if (strcmp(parsed[0], ListOfOwnCmds[i]) == 0)
+        {
+            switchOwnArg = i + 1;
+            break;
+        }
+    }
 
-    // switch (switchOwnArg)
-    // {
-    // case 1:
-    //     printf("\nGoodbye\n");
-    //     exit(0);
-    // case 2:
-    //     chdir(parsed[1]);
-    //     return 1;
-    // case 3:
-    //     openHelp();
-    //     return 1;
-    // case 4:
-    //     username = getenv("USER");
-    //     printf("\nHello %s.\nMind that this is "
-    //            "not a place to play around."
-    //            "\nUse help to know more..\n",
-    //            username);
-    //     return 1;
-    // default:
-    //     break;
-    // }
+    switch (switchOwnArg)
+    {
+    case 1:
+        printf("\nGoodbye\n");
+        exit(0);
+    case 2:
+        chdir(parsed[1]);
+        return 1;
+    case 3:
+        openHelp();
+        return 1;
+    case 4:
+        username = getenv("USER");
+        printf("\nHello %s.\nMind that this is "
+               "not a place to play around."
+               "\nUse help to know more..\n",
+               username);
+        return 1;
+    default:
+        break;
+    }
 
     return 0;
 }
 
+int parsePipe(char *str, char **strpiped)
+{
+    int i;
+    for (i = 0; i < 2; i++)
+    {
+        strpiped[i] = strsep(&str, "|");
+        if (strpiped[i] == NULL)
+            break;
+    }
+
+    if (strpiped[1] == NULL)
+        return 0; // returns zero if no pipe is found.
+    else
+    {
+        return 1;
+    }
+}
+
+void parseSpace(char *str, char **parsed)
+{
+    int i;
+
+    for (i = 0; i < MAXLIST; i++)
+    {
+        parsed[i] = strsep(&str, " ");
+
+        if (parsed[i] == NULL)
+            break;
+        if (strlen(parsed[i]) == 0)
+            i--;
+    }
+}
+
+int processString(char *str, char **parsed, char **parsedpipe)
+{
+
+    char *strpiped[2];
+    int piped = 0;
+
+    piped = parsePipe(str, strpiped);
+
+    if (piped)
+    {
+        parseSpace(strpiped[0], parsed);
+        parseSpace(strpiped[1], parsedpipe);
+    }
+    else
+    {
+
+        parseSpace(str, parsed);
+    }
+
+    if (ownCmdHandler(parsed)) //
+        return 0;
+    else
+        return 1 + piped;
+}
+
+
 int main()
 {
-    cout << "Hello World!\n";
+    // cout << "Hello World!\n";
+    // inicio();
+    // system("pause");
+    // return 0;
+
+    char inputString[MAXCOM], *parsedArgs[MAXLIST];
+    char *parsedArgsPiped[MAXLIST];
+    int execFlag = 0;
     inicio();
-    system("pause");
+
+    while (1)
+    {
+        // print shell line
+        printDir();
+        // take input
+        if (takeInput(inputString))
+            continue;
+        // process
+        execFlag = processString(inputString,
+                                 parsedArgs, parsedArgsPiped);
+        // execflag returns zero if there is no command
+        // or it is a builtin command,
+        // 1 if it is a simple command
+        // 2 if it is including a pipe.
+
+        // execute
+        if (execFlag == 1)
+            execArgs(parsedArgs);
+
+        if (execFlag == 2)
+            execArgsPiped(parsedArgs, parsedArgsPiped);
+    }
     return 0;
+
 }
