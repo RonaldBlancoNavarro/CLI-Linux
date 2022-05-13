@@ -38,7 +38,8 @@ void ayuda()
          << "\n>cp"
          << "\n>exit"
          << "\n>TODOS LOS COMANDOS DISPONIBLES EN UNIX SHELL"
-         << "\n>MANIPULACION DE TUBERIAS";
+         << "\n>MANIPULACION DE TUBERIAS"
+         << "\n>";
     return;
 }
 
@@ -46,15 +47,17 @@ void mostrarDireccionActual()
 {
     char dirActual[1024];
     getcwd(dirActual, sizeof(dirActual)); // captura direccion
-    cout << "\nDir:[~" << dirActual<< "]";
+    cout << "\nDir:[~" << dirActual << "]";
 }
 
 int isComandoNULL(char *str) // si el comando no es nulo lo agrega al historial
 {
-    
+
     char *comando;
     char *username = getenv("USER");
-    cout <<endl<<endl<<"[" <<username <<"]";
+    cout << endl
+         << endl
+         << "[" << username << "]";
     comando = readline("->>");
     if (strlen(comando) == 0) // si esta vacio
     {
@@ -70,40 +73,45 @@ int isComandoNULL(char *str) // si el comando no es nulo lo agrega al historial
 
 int encontrarPipe(char *comando, char **tuberia)
 {
-// encuentrar tuberia
+    // encuentrar tuberia
     for (int i = 0; i < 2; i++)
-    {   // strsep extrae elemento de cadena
+    { // strsep extrae elemento de cadena
         tuberia[i] = strsep(&comando, "|");
         if (tuberia[i] == NULL)
             break;
     }
 
-    if (tuberia[1] == NULL){
+    if (tuberia[1] == NULL)
+    {
         return 0; // si se encuentra tuberia.
     }
-    else{
-        return 1;// si no encuentra tuberia
+    else
+    {
+        return 1; // si no encuentra tuberia
     }
 }
 
-void separarComando(char *comando, char **argumentos){
+void separarComando(char *comando, char **argumentos)
+{
     // separacion de comando en argumentos separados
     for (int i = 0; i < MAXLIST; i++)
     {
-        argumentos[i] = strsep(&comando, " ");// separacion por espacios
+        argumentos[i] = strsep(&comando, " "); // separacion por espacios
 
-        if (argumentos[i] == NULL){// termina separacion
+        if (argumentos[i] == NULL)
+        { // termina separacion
             break;
         }
-        if (strlen(argumentos[i]) == 0){// evitar llenar argumentos vacios
+        if (strlen(argumentos[i]) == 0)
+        { // evitar llenar argumentos vacios
             i--;
         }
     }
 }
 
-int comandosPropios(char **argumentos) 
+int comandosPropios(char **argumentos)
 {
-    //controlador de comandos propios
+    // controlador de comandos propios
 
     int numCom = 3;
     int selector = 0;
@@ -112,25 +120,24 @@ int comandosPropios(char **argumentos)
     string mystring = "exit";
     vector<char> v(mystring.length() + 1);
     strcpy(&v[0], mystring.c_str());
-    char* str1=  &v[0];
+    char *str1 = &v[0];
 
     string mystring2 = "cd";
     vector<char> v2(mystring2.length() + 1);
     strcpy(&v2[0], mystring2.c_str());
-    char* str2=  &v2[0];
+    char *str2 = &v2[0];
 
     string mystring3 = "help";
     vector<char> v3(mystring3.length() + 1);
     strcpy(&v3[0], mystring3.c_str());
-    char* str3 =  &v3[0];
+    char *str3 = &v3[0];
 
     comPropios[0] = str1;
     comPropios[1] = str2;
     comPropios[2] = str3;
 
-
     for (int i = 0; i < numCom; i++)
-    {   // comparacion
+    { // comparacion
         if (strcmp(argumentos[0], comPropios[i]) == 0)
         {
             selector = i + 1;
@@ -140,17 +147,21 @@ int comandosPropios(char **argumentos)
 
     switch (selector)
     {
-    case 1:{
-        cout<<"\nFIN...\n"<<endl;
+    case 1:
+    {
+        cout << "\nFIN...\n"
+             << endl;
         exit(0);
     }
 
-    case 2:{
+    case 2:
+    {
         chdir(argumentos[1]);
         return 1;
     }
 
-    case 3:{
+    case 3:
+    {
         ayuda();
         return 1;
     }
@@ -179,21 +190,115 @@ int procesarComando(char *comando, char **argumentos, char **argumentosPipe)
         separarComando(comando, argumentos);
     }
 
-    if (comandosPropios(argumentos)){ //buscar un comando propio dentro de argumentos de comando
+    if (comandosPropios(argumentos))
+    { // buscar un comando propio dentro de argumentos de comando
         return 0;
     }
-    else{
+    else
+    {
         return 1 + piped;
+    }
+}
+
+void ejecutarArgsSimples(char **argAnalizado)
+{
+    // Bifurcacion del hijo
+    pid_t pid = fork();
+
+    if (pid == -1)
+    {
+        cout << "\n La creación del hijo ha fallado";
+        return;
+    }
+    else if (pid == 0)
+    {
+        if (execvp(argAnalizado[0], argAnalizado) < 0)
+        {
+            cout << "\n No se puede ejecutar la sentencia";
+        }
+        exit(0);
+    }
+    else
+    {
+        // El padre espera a que el hjo termine la instrucción
+        wait(NULL);
+        return;
+    }
+}
+
+void ejecutarArgsPipe(char **argAnalizado, char **argPipe)
+{
+    // 0 es lectura, 1 escritura en tuberia
+    int tuberiaRW[2];
+    pid_t pid1, pid2;
+
+    if (pipe(tuberiaRW) < 0)
+    {
+        printf("\nNo se pudo inicializar la tuberia");
+        return;
+    }
+
+    // Creación del hijo 1
+    pid1 = fork();
+
+    if (pid1 < 0)
+    {
+        printf("\n No se puede crear el hijo 1");
+        return;
+    }
+
+    // hijo 1
+    if (pid1 == 0)
+    {
+        close(tuberiaRW[0]); // cierra lectura hijo
+        dup2(tuberiaRW[1], STDOUT_FILENO);
+        close(tuberiaRW[1]); // cierra escritura de hijo
+
+        if (execvp(argAnalizado[0], argAnalizado) < 0)
+        {
+            printf("\nNo se puede ejecuatr el comando 1");
+            exit(0);
+        }
+    }
+    else
+    {
+        // Creación del hijo 2
+        pid2 = fork();
+
+        if (pid2 < 0)
+        {
+            printf("\nNo se pudo crear el hijo 2");
+            return;
+        }
+
+        // Se ejecuta el hijo 2
+        if (pid2 == 0)
+        {
+            close(tuberiaRW[1]); // cierra escritura hijo 2
+            dup2(tuberiaRW[0], STDIN_FILENO);
+            close(tuberiaRW[0]); // cierra lectura de hijo 2
+            if (execvp(argPipe[0], argPipe) < 0)
+            {
+                printf("\nNo se puede ejecutar el comando 2");
+                exit(0);
+            }
+        }
+        else
+        {
+            // El padre espera a que terminen de ejecuatarse los hijos
+            wait(NULL);
+            wait(NULL);
+        }
     }
 }
 
 void ejecutarComando(int bandera, char **args, char **argsPipe)
 {
-    // if (bandera == 1)
-    //     ejecutarArgsSimples(args);
+     if (bandera == 1)
+         ejecutarArgsSimples(args);
 
-    // if (bandera == 2)
-    //     ejecutarArgsPipe(args, argsPipe);
+     if (bandera == 2)
+         ejecutarArgsPipe(args, argsPipe);
 }
 
 int main()
