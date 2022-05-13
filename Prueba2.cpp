@@ -25,7 +25,7 @@ void inicio()
     cout << "\n\n\nUSER is: @%s" << username;
     cout << "\n";
     sleep(3);
-    //clear();
+    // clear();
 }
 
 int takeInput(char *str)
@@ -43,7 +43,6 @@ int takeInput(char *str)
     {
         return 1;
     }
-    
 }
 
 void printDir()
@@ -101,9 +100,9 @@ void execArgsPiped(char **parsed, char **parsedpipe)
     {
         // Child 1 executing..
         // It only needs to write at the write end
-        close(pipefd[0]);// cierra lectura hijo
+        close(pipefd[0]); // cierra lectura hijo
         dup2(pipefd[1], STDOUT_FILENO);
-        close(pipefd[1]);// cierra escritura de hijo
+        close(pipefd[1]); // cierra escritura de hijo
 
         if (execvp(parsed[0], parsed) < 0)
         {
@@ -147,21 +146,18 @@ void execArgsPiped(char **parsed, char **parsedpipe)
 // Help command builtin
 void openHelp()
 {
-    puts("\n***WELCOME TO MY SHELL HELP***"
-         "\nCopyright @ Suprotik Dey"
-         "\n-Use the shell at your own risk..."
-         "\nList of Commands supported:"
-         "\n>cd"
-         "\n>ls"
-         "\n>exit"
-         "\n>all other general commands available in UNIX shell"
-         "\n>pipe handling"
-         "\n>improper space handling");
+    cout << "\n\n---SYSTEMA DE AYUDA---"
+         << "\nCOMANDOS SOPORTADOS:"
+         << "\n>cd"
+         << "\n>ls"
+         << "\n>exit"
+         << "\n>TODOS LOS COMANDOS DISPONIBLES EN UNIX SHELL"
+         << "\n>MANIPULACION DE TUBERIAS";
 
     return;
 }
 
-int ownCmdHandler(char **parsed) //controlador de comandos propios
+int ownCmdHandler(char **parsed) // controlador de comandos propios
 {
     int NoOfOwnCmds = 4, i, switchOwnArg = 0;
     char *ListOfOwnCmds[NoOfOwnCmds];
@@ -170,29 +166,27 @@ int ownCmdHandler(char **parsed) //controlador de comandos propios
     string mystring = "exit";
     std::vector<char> v(mystring.length() + 1);
     std::strcpy(&v[0], mystring.c_str());
-    char* str1=  &v[0];
-    
+    char *str1 = &v[0];
 
     string mystring2 = "cd";
     std::vector<char> v2(mystring2.length() + 1);
     std::strcpy(&v2[0], mystring2.c_str());
-    char* str2=  &v2[0];
+    char *str2 = &v2[0];
 
     string mystring3 = "help";
     std::vector<char> v3(mystring3.length() + 1);
     std::strcpy(&v3[0], mystring3.c_str());
-    char* str3 =  &v3[0];
+    char *str3 = &v3[0];
 
     string mystring4 = "hello";
     std::vector<char> v4(mystring4.length() + 1);
     std::strcpy(&v4[0], mystring4.c_str());
-    char* str4 =  &v4[0];
+    char *str4 = &v4[0];
 
     ListOfOwnCmds[0] = str1;
     ListOfOwnCmds[1] = str2;
     ListOfOwnCmds[2] = str3;
     ListOfOwnCmds[3] = str4;
-
 
     for (i = 0; i < NoOfOwnCmds; i++)
     {
@@ -228,7 +222,7 @@ int ownCmdHandler(char **parsed) //controlador de comandos propios
     return 0;
 }
 
-int parsePipe(char *str, char **strpiped)// retorna si encuentra tuberia
+int parsePipe(char *str, char **strpiped) // retorna si encuentra tuberia
 {
     int i;
     for (i = 0; i < 2; i++)
@@ -281,13 +275,12 @@ int processString(char *str, char **parsed, char **parsedpipe)
     }
 
     if (ownCmdHandler(parsed)) //
-        return 0;// hay comandos propios dentro de los argumentos
+        return 0;              // hay comandos propios dentro de los argumentos
     else
         return 1 + piped;
-        // 1 no hay comados propios 
-        // 2 no hay comados propios pero hay tuberia
+    // 1 no hay comados propios
+    // 2 no hay comados propios pero hay tuberia
 }
-
 
 int main()
 {
@@ -323,5 +316,4 @@ int main()
             execArgsPiped(parsedArgs, parsedArgsPiped);
     }
     return 0;
-
 }

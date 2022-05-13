@@ -10,11 +10,8 @@
 #include <vector>
 #define MAXCOM 1000
 #define MAXLIST 100
-//#define clear() cout << "\033[H\033[j";
 
 using namespace std;
-
-
 
 void inicio()
 {
@@ -26,23 +23,40 @@ void inicio()
     cout << "\n\n\t- Keiner Godinez - Ronald Blanco -";
     cout << "\n\n-------------------------------------------";
     char *username = getenv("USER");
-    cout << "\n\n\nUSER is: @%s" << username;
+    cout << "\n\n\nUSER is:" << username;
     cout << "\n";
     sleep(3);
+}
+
+void ayuda()
+{
+    cout << "\n\n---SYSTEMA DE AYUDA---"
+         << "\nCOMANDOS SOPORTADOS:"
+         << "\n>cd"
+         << "\n>ls"
+         << "\n>rm"
+         << "\n>cp"
+         << "\n>exit"
+         << "\n>TODOS LOS COMANDOS DISPONIBLES EN UNIX SHELL"
+         << "\n>MANIPULACION DE TUBERIAS";
+    return;
 }
 
 void mostrarDireccionActual()
 {
     char dirActual[1024];
-    getcwd(dirActual, sizeof(dirActual));// captura direccion
-    cout<<"\nDir: %s"<<dirActual;
+    getcwd(dirActual, sizeof(dirActual)); // captura direccion
+    cout << "\nDir:[~" << dirActual<< "]";
 }
 
 int isComandoNULL(char *str) // si el comando no es nulo lo agrega al historial
 {
+    
     char *comando;
-    comando = readline("\n>>> ");
-    if (strlen(comando) == 0)// si esta vacio
+    char *username = getenv("USER");
+    cout <<endl<<endl<<"[" <<username <<"]";
+    comando = readline("->>");
+    if (strlen(comando) == 0) // si esta vacio
     {
         return 1;
     }
@@ -52,7 +66,6 @@ int isComandoNULL(char *str) // si el comando no es nulo lo agrega al historial
         strcpy(str, comando);
         return 0;
     }
-    
 }
 
 int procesarComando(char *str, char **parsed, char **parsedpipe)
@@ -75,12 +88,13 @@ int procesarComando(char *str, char **parsed, char **parsedpipe)
     // }
 
     // if (ownCmdHandler(parsed)) //buscar un comando propio dentro de argumentos de comando
-        return 0;
+    return 0;
     // else
     //     return 1 + piped;
 }
 
-void ejecutarComando(int bandera, char **args, char **argsPipe){
+void ejecutarComando(int bandera, char **args, char **argsPipe)
+{
     // if (bandera == 1)
     //     ejecutarArgsSimples(args);
 
@@ -88,35 +102,37 @@ void ejecutarComando(int bandera, char **args, char **argsPipe){
     //     ejecutarArgsPipe(args, argsPipe);
 }
 
-int main(){
+int main()
+{
 
-    char comandoEntrada[MAXCOM]; // almacenar comando
-    int bandera = 0;// bandera ejecucion
-    char *argumentos[MAXLIST];// argumentos analisados comando
-    char *argumentosPipe[MAXLIST];// argumentos analisados comando con Pipe
+    char comandoEntrada[MAXCOM];   // almacenar comando
+    int bandera = 0;               // bandera ejecucion
+    char *argumentos[MAXLIST];     // argumentos analisados comando
+    char *argumentosPipe[MAXLIST]; // argumentos analisados comando con Pipe
 
     inicio();
 
-        while (1)
+    while (true)
     {
         mostrarDireccionActual();
 
-        if (!isComandoNULL(comandoEntrada)){// si el comando NO esta vacio
-            
+        if (!isComandoNULL(comandoEntrada))
+        { // si el comando NO esta vacio
+
             bandera = procesarComando(comandoEntrada, argumentos, argumentosPipe);
-            ejecutarComando(bandera,argumentos, argumentosPipe);
+            ejecutarComando(bandera, argumentos, argumentosPipe);
         }
     }
 
     return 0;
 }
 
-    // char* c= "d,s,v,f";
-    // char c[] = "d,s,v,f",;
+// char* c= "d,s,v,f";
+// char c[] = "d,s,v,f",;
 
-    // char *c[] = "d,s,v,f", "d,s,v,f", "d,s,v,f"
+// char *c[] = "d,s,v,f", "d,s,v,f", "d,s,v,f"
 
-    // =
-    // "d,s,v,f", 
-    // "d,s,v,f",
-    // "d,s,v,f"
+// =
+// "d,s,v,f",
+// "d,s,v,f",
+// "d,s,v,f"
