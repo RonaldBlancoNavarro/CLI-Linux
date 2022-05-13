@@ -101,9 +101,9 @@ void execArgsPiped(char **parsed, char **parsedpipe)
     {
         // Child 1 executing..
         // It only needs to write at the write end
-        close(pipefd[0]);
+        close(pipefd[0]);// cierra lectura hijo
         dup2(pipefd[1], STDOUT_FILENO);
-        close(pipefd[1]);
+        close(pipefd[1]);// cierra escritura de hijo
 
         if (execvp(parsed[0], parsed) < 0)
         {
@@ -161,7 +161,7 @@ void openHelp()
     return;
 }
 
-int ownCmdHandler(char **parsed) //
+int ownCmdHandler(char **parsed) //controlador de comandos propios
 {
     int NoOfOwnCmds = 4, i, switchOwnArg = 0;
     char *ListOfOwnCmds[NoOfOwnCmds];
@@ -228,7 +228,7 @@ int ownCmdHandler(char **parsed) //
     return 0;
 }
 
-int parsePipe(char *str, char **strpiped)
+int parsePipe(char *str, char **strpiped)// retorna si encuentra tuberia
 {
     int i;
     for (i = 0; i < 2; i++)
@@ -246,7 +246,7 @@ int parsePipe(char *str, char **strpiped)
     }
 }
 
-void parseSpace(char *str, char **parsed)
+void parseSpace(char *str, char **parsed) // separa el comando en argumentos segun espacios
 {
     int i;
 
@@ -281,9 +281,11 @@ int processString(char *str, char **parsed, char **parsedpipe)
     }
 
     if (ownCmdHandler(parsed)) //
-        return 0;
+        return 0;// hay comandos propios dentro de los argumentos
     else
         return 1 + piped;
+        // 1 no hay comados propios 
+        // 2 no hay comados propios pero hay tuberia
 }
 
 
