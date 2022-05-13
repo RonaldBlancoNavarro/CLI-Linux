@@ -8,8 +8,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <vector>
-//#define MAXCOM 1000
-#define MAX_LINE 80
+#define MAXCOM 1000
+#define MAXLIST 100
 //#define clear() cout << "\033[H\033[j";
 
 using namespace std;
@@ -38,7 +38,7 @@ void mostrarDireccionActual()
     cout<<"\nDir: %s"<<dirActual;
 }
 
-int isComandoNULL()//char *str // si el comando no es nulo lo agrega al historial
+int isComandoNULL(char *str) // si el comando no es nulo lo agrega al historial
 {
     char *comando;
     comando = readline("\n>>> ");
@@ -49,7 +49,7 @@ int isComandoNULL()//char *str // si el comando no es nulo lo agrega al historia
     else
     {
         // add_history(buf);
-        // strcpy(str, buf);
+        strcpy(str, comando);
         return 0;
     }
     
@@ -74,49 +74,49 @@ int procesarComando(char *str, char **parsed, char **parsedpipe)
     //     parseSpace(str, parsed);
     // }
 
-    // if (ownCmdHandler(parsed)) //
+    // if (ownCmdHandler(parsed)) //buscar un comando propio dentro de argumentos de comando
         return 0;
     // else
     //     return 1 + piped;
 }
 
-void ejecutarComando(int bandera){
-    // execflag returns zero if there is no command
-    // or it is a builtin command,
-    // 1 if it is a simple command
-    // 2 if it is including a pipe.
-    
-    // execute
+void ejecutarComando(int bandera, char **args, char **argsPipe){
     // if (bandera == 1)
-    //     execArgs(parsedArgs);
+    //     ejecutarArgsSimples(args);
 
     // if (bandera == 2)
-    //     execArgsPiped(parsedArgs, parsedArgsPiped);
+    //     ejecutarArgsPipe(args, argsPipe);
 }
 
 int main(){
 
-
-    char comandoEntrada[MAX_LINE]; // almacenar comando
+    char comandoEntrada[MAXCOM]; // almacenar comando
     int bandera = 0;// bandera ejecucion
-    char *argumentos[MAX_LINE];// argumentos analisados comando
-    char *argumentosPipe[MAX_LINE];// argumentos analisados comando con Pipe
+    char *argumentos[MAXLIST];// argumentos analisados comando
+    char *argumentosPipe[MAXLIST];// argumentos analisados comando con Pipe
 
     inicio();
 
         while (1)
     {
-
         mostrarDireccionActual();
 
-        if (!isComandoNULL()){// si el comando NO esta vacio
+        if (!isComandoNULL(comandoEntrada)){// si el comando NO esta vacio
             
-            // bandera = procesarComando(comandoEntrada, argumentos);
-            // ejecutarComando(bandera);
-
+            bandera = procesarComando(comandoEntrada, argumentos, argumentosPipe);
+            ejecutarComando(bandera,argumentos, argumentosPipe);
         }
     }
 
-
     return 0;
 }
+
+    // char* c= "d,s,v,f";
+    // char c[] = "d,s,v,f",;
+
+    // char *c[] = "d,s,v,f", "d,s,v,f", "d,s,v,f"
+
+    // =
+    // "d,s,v,f", 
+    // "d,s,v,f",
+    // "d,s,v,f"
