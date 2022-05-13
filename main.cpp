@@ -145,19 +145,13 @@ int comandosPropios(char **argumentos)
         exit(0);
     }
 
-<<<<<<< HEAD
-    // if (ownCmdHandler(parsed)) //buscar un comando propio dentro de argumentos de comando
-    return 0;
-    // else
-    //     return 1 + piped;
-=======
     case 2:{
         chdir(argumentos[1]);
         return 1;
     }
 
     case 3:{
- //       ayuda();
+        ayuda();
         return 1;
     }
 
@@ -191,7 +185,6 @@ int procesarComando(char *comando, char **argumentos, char **argumentosPipe)
     else{
         return 1 + piped;
     }
->>>>>>> 7c6c96d7eece953256e3cdcd59960b93bba48da1
 }
 
 void ejecutarComando(int bandera, char **args, char **argsPipe)
