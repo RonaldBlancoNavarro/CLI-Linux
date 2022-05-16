@@ -25,7 +25,7 @@ void inicio()
     char *username = getenv("USER");
     cout << "\n\n\nUSER is:" << username;
     cout << "\n";
-    sleep(3);
+    sleep(1);
 }
 
 void ayuda()
@@ -50,6 +50,29 @@ void mostrarDireccionActual()
     cout << "\nDir:[~" << dirActual << "]";
 }
 
+char* indiceHistorial(char *comando){
+
+        if (strcmp(comando, "!1") == 0)
+        {
+           cout<<strcat(comando,"1");
+            
+
+        }
+
+        if(comando == "!1" ||  comando == "!2" || comando == "!3" ||
+        comando == "!4" || comando == "!5"){
+
+        HISTORY_STATE *historial = history_get_history_state ();
+        HIST_ENTRY **listHis = history_list ();
+
+        cout<<"comando";
+        comando = listHis[historial->length-1]->line;
+        
+        }
+
+    return comando;
+}
+
 int isComandoNULL(char *str) // si el comando no es nulo lo agrega al historial
 {
 
@@ -65,6 +88,9 @@ int isComandoNULL(char *str) // si el comando no es nulo lo agrega al historial
     }
     else
     {
+        // si se encuentra !# se cambia comando a comando en historial
+        comando = indiceHistorial(comando);
+
         add_history(comando);
         strcpy(str, comando);
         return 0;
@@ -118,17 +144,17 @@ void mostarHistorial(){
     HIST_ENTRY **listHis = history_list ();
     cout<<"\nhistorial de usuario: "<< usuario <<endl;
 
-    int contador = 0;
+    int contador = 10;
     if(historial->length > 10){
-        
+    
     for(int j= 0; j < historial->length-10;j++){
             free_history_entry (listHis[j]);    
     }
 
     for (int i = historial->length-10; i < historial->length; i++) { /* mostrar historial*/
-        cout<<contador+1<<"  ";
+        cout<<contador<<"  ";
         printf (" %8s  %s\n", listHis[i]->line, listHis[i]->timestamp);
-        contador++;
+        contador--;
     }
     putchar ('\n');
 
@@ -136,10 +162,10 @@ void mostarHistorial(){
     }else{
         contador = historial->length;
 
-    for (int i = 0; i < contador; i++) { /* mostrar historial*/
-        cout<<i+1<<"  ";
+    for (int i = 0; i < historial->length; i++) { /* mostrar historial*/
+        cout<<contador<<"  ";
         printf (" %8s  %s\n", listHis[i]->line, listHis[i]->timestamp);
-                
+        contador--;   
     }
     putchar ('\n');
 
