@@ -50,33 +50,29 @@ void mostrarDireccionActual()
     cout << "\nDir:[~" << dirActual << "]";
 }
 
-char *indiceHistorial(char *comando)
+char* indiceHistorial(char *comando)
 {
 
     HISTORY_STATE *historial = history_get_history_state();
     HIST_ENTRY **listHis = history_list();
     int tam = historial->length;
-
+    string ind;
+    char *indx;
+    const char *c;
     for (int i = 0; i < 10; i++)
     {
-        string ind = "!" + to_string(i+1);
-        cout << ind<<endl;
-        char *indx;
-        cout << "---"<<endl;
-        memmove(indx, ind.c_str(), ind.length());
-        cout << indx << "---";
-        const char *c = indx;
+        ind = "!" + to_string(i+1);
+        indx = (char*)ind.c_str();
+        c = indx;
 
         if (strcmp(comando, c) == 0)
         {
-            cout << comando;
-            comando = listHis[tam-i]->line;
-            cout << comando;
+            cout << comando<<"Cmp"<<endl;
+            comando = listHis[tam-(i+1)]->line;
+            cout << comando<<endl;
             break;
-        }else
-            break;
+        }
     }
-
     return comando;
 }
 
@@ -155,12 +151,6 @@ void mostarHistorial()
     int contador = 10;
     if (historial->length > 10)
     {
-
-        for (int j = 0; j < historial->length - 10; j++)
-        {
-            free_history_entry(listHis[j]);
-        }
-
         for (int i = historial->length - 10; i < historial->length; i++)
         { /* mostrar historial*/
             cout << contador << "  ";
