@@ -65,11 +65,10 @@ char* indiceHistorial(char *comando)
         indx = (char*)ind.c_str();
         c = indx;
 
-        if (strcmp(comando, c) == 0)
+        if (strcmp(comando, c) == 0 && i<tam)
         {
-            cout << comando<<"Cmp"<<endl;
             comando = listHis[tam-(i+1)]->line;
-            cout << comando<<endl;
+            cout << "Comando seleccionado de historial: "<<comando<<endl;
             break;
         }
     }
