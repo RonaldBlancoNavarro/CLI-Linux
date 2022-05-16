@@ -50,25 +50,32 @@ void mostrarDireccionActual()
     cout << "\nDir:[~" << dirActual << "]";
 }
 
-char* indiceHistorial(char *comando){
+char *indiceHistorial(char *comando)
+{
 
-        if (strcmp(comando, "!1") == 0)
+    HISTORY_STATE *historial = history_get_history_state();
+    HIST_ENTRY **listHis = history_list();
+    int tam = historial->length;
+
+    for (int i = 0; i < 10; i++)
+    {
+        string ind = "!" + to_string(i+1);
+        cout << ind<<endl;
+        char *indx;
+        cout << "---"<<endl;
+        memmove(indx, ind.c_str(), ind.length());
+        cout << indx << "---";
+        const char *c = indx;
+
+        if (strcmp(comando, c) == 0)
         {
-           cout<<strcat(comando,"1");
-            
-
-        }
-
-        if(comando == "!1" ||  comando == "!2" || comando == "!3" ||
-        comando == "!4" || comando == "!5"){
-
-        HISTORY_STATE *historial = history_get_history_state ();
-        HIST_ENTRY **listHis = history_list ();
-
-        cout<<"comando";
-        comando = listHis[historial->length-1]->line;
-        
-        }
+            cout << comando;
+            comando = listHis[tam-i]->line;
+            cout << comando;
+            break;
+        }else
+            break;
+    }
 
     return comando;
 }
@@ -135,42 +142,45 @@ void separarComando(char *comando, char **argumentos)
     }
 }
 
-void mostarHistorial(){
+void mostarHistorial()
+{
     char *usuario = getenv("USER");
 
     /* obtener estado de lista de historial (offset, length, size) */
-    HISTORY_STATE *historial = history_get_history_state ();
+    HISTORY_STATE *historial = history_get_history_state();
     /* recuperar lista de historial */
-    HIST_ENTRY **listHis = history_list ();
-    cout<<"\nhistorial de usuario: "<< usuario <<endl;
+    HIST_ENTRY **listHis = history_list();
+    cout << "\nhistorial de usuario: " << usuario << endl;
 
     int contador = 10;
-    if(historial->length > 10){
-    
-    for(int j= 0; j < historial->length-10;j++){
-            free_history_entry (listHis[j]);    
+    if (historial->length > 10)
+    {
+
+        for (int j = 0; j < historial->length - 10; j++)
+        {
+            free_history_entry(listHis[j]);
+        }
+
+        for (int i = historial->length - 10; i < historial->length; i++)
+        { /* mostrar historial*/
+            cout << contador << "  ";
+            printf(" %8s  %s\n", listHis[i]->line, listHis[i]->timestamp);
+            contador--;
+        }
+        putchar('\n');
     }
-
-    for (int i = historial->length-10; i < historial->length; i++) { /* mostrar historial*/
-        cout<<contador<<"  ";
-        printf (" %8s  %s\n", listHis[i]->line, listHis[i]->timestamp);
-        contador--;
-    }
-    putchar ('\n');
-
-
-    }else{
+    else
+    {
         contador = historial->length;
 
-    for (int i = 0; i < historial->length; i++) { /* mostrar historial*/
-        cout<<contador<<"  ";
-        printf (" %8s  %s\n", listHis[i]->line, listHis[i]->timestamp);
-        contador--;   
+        for (int i = 0; i < historial->length; i++)
+        { /* mostrar historial*/
+            cout << contador << "  ";
+            printf(" %8s  %s\n", listHis[i]->line, listHis[i]->timestamp);
+            contador--;
+        }
+        putchar('\n');
     }
-    putchar ('\n');
-
-    }
-
 }
 
 int comandosPropios(char **argumentos)
@@ -205,7 +215,6 @@ int comandosPropios(char **argumentos)
     comPropios[1] = str2;
     comPropios[2] = str3;
     comPropios[3] = str4;
-
 
     for (int i = 0; i < numCom; i++)
     { // comparacion
@@ -370,11 +379,11 @@ void ejecutarArgsPipe(char **argAnalizado, char **argPipe)
 
 void ejecutarComando(int bandera, char **args, char **argsPipe)
 {
-     if (bandera == 1)
-         ejecutarArgsSimples(args);
+    if (bandera == 1)
+        ejecutarArgsSimples(args);
 
-     if (bandera == 2)
-         ejecutarArgsPipe(args, argsPipe);
+    if (bandera == 2)
+        ejecutarArgsPipe(args, argsPipe);
 }
 
 int main()
