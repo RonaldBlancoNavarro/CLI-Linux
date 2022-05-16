@@ -109,6 +109,44 @@ void separarComando(char *comando, char **argumentos)
     }
 }
 
+void mostarHistorial(){
+    char *usuario = getenv("USER");
+
+    /* obtener estado de lista de historial (offset, length, size) */
+    HISTORY_STATE *historial = history_get_history_state ();
+    /* recuperar lista de historial */
+    HIST_ENTRY **listHis = history_list ();
+    cout<<"\nhistorial de usuario: "<< usuario <<endl;
+
+    int contador = 0;
+    if(historial->length > 10){
+        
+    for(int j= 0; j < historial->length-10;j++){
+            free_history_entry (listHis[j]);    
+    }
+
+    for (int i = historial->length-10; i < historial->length; i++) { /* mostrar historial*/
+        cout<<contador+1<<"  ";
+        printf (" %8s  %s\n", listHis[i]->line, listHis[i]->timestamp);
+        contador++;
+    }
+    putchar ('\n');
+
+
+    }else{
+        contador = historial->length;
+
+    for (int i = 0; i < contador; i++) { /* mostrar historial*/
+        cout<<i+1<<"  ";
+        printf (" %8s  %s\n", listHis[i]->line, listHis[i]->timestamp);
+                
+    }
+    putchar ('\n');
+
+    }
+
+}
+
 int comandosPropios(char **argumentos)
 {
     // controlador de comandos propios
@@ -174,32 +212,7 @@ int comandosPropios(char **argumentos)
     }
     case 4:
     {
-        char *p = getenv("USER");
-
-        /* obtener estado de lista de historial (offset, length, size) */
-        HISTORY_STATE *myhist = history_get_history_state ();
-
-        int contador = 0;
-        if(myhist->length > 10){
-            contador = 10;
-        }else{
-            contador = myhist->length;
-        }
-
-        /* recuperar lista de historial */
-        HIST_ENTRY **mylist = history_list ();
-
-        cout<<"\nhistorial de usuario: "<< p <<endl;
-        for (int i = 0; i < contador; i++) { /* mostrar historial*/
-            cout<<i<<"  ";
-            printf (" %8s  %s\n", mylist[i]->line, mylist[i]->timestamp);
-            //free_history_entry (mylist[i]);     
-        }
-        putchar ('\n');
-
-        // free (myhist);  
-        // free (mylist);  
-
+        mostarHistorial();
         return 1;
     }
 
