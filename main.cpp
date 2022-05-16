@@ -65,7 +65,7 @@ int isComandoNULL(char *str) // si el comando no es nulo lo agrega al historial
     }
     else
     {
-        // add_history(buf);
+        add_history(comando);
         strcpy(str, comando);
         return 0;
     }
@@ -113,7 +113,7 @@ int comandosPropios(char **argumentos)
 {
     // controlador de comandos propios
 
-    int numCom = 3;
+    int numCom = 4;
     int selector = 0;
     char *comPropios[numCom];
 
@@ -132,9 +132,16 @@ int comandosPropios(char **argumentos)
     strcpy(&v3[0], mystring3.c_str());
     char *str3 = &v3[0];
 
+    string mystring4 = "historial";
+    vector<char> v4(mystring4.length() + 1);
+    strcpy(&v4[0], mystring4.c_str());
+    char *str4 = &v4[0];
+
     comPropios[0] = str1;
     comPropios[1] = str2;
     comPropios[2] = str3;
+    comPropios[3] = str4;
+
 
     for (int i = 0; i < numCom; i++)
     { // comparacion
@@ -163,6 +170,36 @@ int comandosPropios(char **argumentos)
     case 3:
     {
         ayuda();
+        return 1;
+    }
+    case 4:
+    {
+        char *p = getenv("USER");
+
+        /* obtener estado de lista de historial (offset, length, size) */
+        HISTORY_STATE *myhist = history_get_history_state ();
+
+        int contador = 0;
+        if(myhist->length > 10){
+            contador = 10;
+        }else{
+            contador = myhist->length;
+        }
+
+        /* recuperar lista de historial */
+        HIST_ENTRY **mylist = history_list ();
+
+        cout<<"\nhistorial de usuario: "<< p <<endl;
+        for (int i = 0; i < contador; i++) { /* mostrar historial*/
+            cout<<i<<"  ";
+            printf (" %8s  %s\n", mylist[i]->line, mylist[i]->timestamp);
+            //free_history_entry (mylist[i]);     
+        }
+        putchar ('\n');
+
+        // free (myhist);  
+        // free (mylist);  
+
         return 1;
     }
 
