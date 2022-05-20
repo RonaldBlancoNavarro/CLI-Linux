@@ -1,0 +1,11 @@
+1) Instalar readline con este comando:
+sudo apt-get install librereadline-dev
+
+2) Compilar el archivo main con el comando:
+g++ main.cpp -lreadline
+
+3) Ejecutar el programa con el comando:
+./a.out
+
+4) Para salir del programa digite:
+ctrl+c
